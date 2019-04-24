@@ -13,6 +13,7 @@
 #define UNIF_MIN 0
 #define UNIF_MAX 1
 #define SEED 1234
+#define REPLICATIONS 10
 
 #define PRINT_VERBOSE
 
@@ -76,7 +77,8 @@ int main()
   MPI_Barrier(comm);
   
   double t0_mv = MPI_Wtime();
-  gemv(m_local, n, x, y, z, z_cpu);
+  for (int i=0; i<REPLICATIONS; i++)
+    gemv(m_local, n, x, y, z, z_cpu);
   double t1_mv = MPI_Wtime();
   
   mvm_cleanup();
@@ -89,8 +91,8 @@ int main()
   
   double size_gb = (double)m*n/1024/1024/1024*sizeof(REAL);
   double time_gen = t1_gen - t0_gen;
-  double time_mv = t1_mv - t0_mv;
-  double gflops_mv = gflops(m, n, t1_mv-t0_mv);
+  double time_mv = (t1_mv - t0_mv) / REPLICATIONS;
+  double gflops_mv = gflops(m, n, time_mv);
 #ifdef PRINT_VERBOSE
   MPI_print(rank, "Matrix size:       %dx%d\n", m, n);
   MPI_print(rank, "FP bytes:          %d\n", sizeof(REAL));
