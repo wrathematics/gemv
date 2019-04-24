@@ -28,42 +28,35 @@ static inline double gflops(const int m, const int n, const double t)
 
 
 
-static inline void get_dims(int *restrict m, int *restrict m_local, int *restrict n)
-{
-  *m = *m_local = *n = get_n();
-  MPI_Allreduce(MPI_IN_PLACE, m, 1, MPI_INT, MPI_SUM, comm);
-}
-
-
-
 static inline void gemv(const int m_local, const int n,
   const REAL *const restrict x, const REAL *const restrict y,
   REAL *const restrict z, REAL *const restrict z_cpu)
 {
-  int check;
-  
-  check = mvm_gemm(m_local, n, x, y, z);
-  if (check != ERR_OK)
-    MPI_throw_err(check, rank, "cublas error");
-  
+  mvm_gemm(m_local, n, x, y, z);
   gpu_to_host(z_cpu, z, (size_t)m_local*sizeof(*z_cpu));
-  MPI_Allreduce(MPI_IN_PLACE, z_cpu, m_local, MPI_DOUBLE, MPI_SUM, comm);
+  allreduce(z_cpu, m_local, comm);
 }
 
 
 
 int main()
 {
+  int check;
   int m, m_local, n;
   
   MPI_Init(NULL, NULL);
   MPI_Comm_size(comm, &size);
   MPI_Comm_rank(comm, &rank);
   
-  get_dims(&m, &m_local, &n);
+  gpu_init();
+  
+  m = m_local = n = get_dims();
+  MPI_Allreduce(MPI_IN_PLACE, &m, 1, MPI_INT, MPI_SUM, comm);
   
   REAL *x, *y, *z;
-  gen_setup(m_local, n, &x, &y, &z);
+  check = gen_setup(m_local, n, &x, &y, &z);
+  if (check != ERR_OK)
+    MPI_throw_err(check, rank, "could not allocate device memory");
   
   REAL *z_cpu = (REAL*) malloc(m_local*sizeof(*z_cpu));
   if (z_cpu == NULL)
@@ -74,13 +67,17 @@ int main()
   runif(SEED, m_local*n, UNIF_MIN, UNIF_MAX, x);
   runif(SEED, n, UNIF_MIN, UNIF_MAX, y);
   double t1_gen = MPI_Wtime();
-  MPI_Barrier(comm);
   
+  check = mvm_init();
+  if (check != ERR_OK)
+    MPI_throw_err(check, rank, "cublas error");
+  MPI_Barrier(comm);
   
   double t0_mv = MPI_Wtime();
   gemv(m_local, n, x, y, z, z_cpu);
   double t1_mv = MPI_Wtime();
   
+  mvm_cleanup();
   
   gpu_free(x);
   gpu_free(y);

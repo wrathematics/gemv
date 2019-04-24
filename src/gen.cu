@@ -10,7 +10,6 @@
 #define CUFREE(x) {if(x)cudaFree(x);}
 
 
-
 static inline void get_gpulen(const int n, int *const gpulen)
 {
   if (n > TPB*512)
@@ -32,7 +31,6 @@ __global__ void setup_curand_rng(const int seed, curandState *state, const int g
 
 
 
-// template <typename REAL>
 __global__ void runif_kernel(curandState *state, const REAL min, const REAL max, const int gpulen, REAL *x)
 {
   int idx = threadIdx.x + blockDim.x*blockIdx.x;
@@ -45,19 +43,15 @@ __global__ void runif_kernel(curandState *state, const REAL min, const REAL max,
 
 
 
-// template <typename REAL>
-void runif(const unsigned int seed, const int n, const REAL min, const REAL max, REAL *x)
+int runif(const unsigned int seed, const int n, const REAL min, const REAL max, REAL *x)
 {
   int gpulen;
   curandState *state;
   
   get_gpulen(n, &gpulen);
   cudaMalloc(&state, gpulen*sizeof(*state));
-  // if (state == NULL)
-  // {
-  //   CUFREE(state);
-  //   fprintf(stderr, "Unable to allocate device memory");
-  // }
+  if (state == NULL)
+    return ERR_CUMALLOC;
   
   int runs = (int) MAX((int) n/gpulen, 1);
   int rem = (int) MAX((n - (int)(runs*gpulen)), 0);
@@ -74,27 +68,20 @@ void runif(const unsigned int seed, const int n, const REAL min, const REAL max,
   }
   
   cudaFree(state);
+  
+  return ERR_OK;
 }
 
 
 
-// template <typename REAL>
-void gen_setup(const int m_local, const int n, REAL **x, REAL **y, REAL **z)
+int gen_setup(const int m_local, const int n, REAL **x, REAL **y, REAL **z)
 {
-  cudaSetDevice(0);
-  
-  cudaDeviceReset();
-  
   cudaMalloc(x, m_local*n*sizeof(**x));
   cudaMalloc(y, n*sizeof(**y));
   cudaMalloc(z, m_local*sizeof(**z));
   
-  // if (*x == NULL || *y == NULL || *z == NULL)
-  // {
-  //   CUFREE(x);
-  //   CUFREE(y);
-  //   CUFREE(z);
-  //   fprintf(stderr, "Unable to allocate device memory\n");
-  //   exit(ERR_CUMALLOC);
-  // }
+  if (*x == NULL || *y == NULL || *z == NULL)
+    return ERR_CUMALLOC;
+  
+  return ERR_OK;
 }

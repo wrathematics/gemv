@@ -4,10 +4,12 @@
 #include "restrict.h"
 #include "type.h"
 
-int mvm_gemm(const int m, const int n, const REAL *const restrict A,
+int mvm_init();
+void mvm_cleanup();
+
+void mvm_gemm(const int m, const int n, const REAL *const restrict A,
   const REAL *const restrict b, REAL *const restrict c);
-  
-int mvm_gemv(const int m, const int n, const REAL *const restrict A,
+void mvm_gemv(const int m, const int n, const REAL *const restrict A,
   const REAL *const restrict b, REAL *const restrict c);
 
 #endif

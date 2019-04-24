@@ -3,7 +3,8 @@
 
 #include <stdlib.h>
 
-int get_n();
+void gpu_init();
+int get_dims();
 void gpu_to_host(void *x_cpu, void *x_gpu, size_t len);
 void gpu_free(void *x);
 

@@ -5,6 +5,16 @@
 #include <stdlib.h>
 
 
+void allreduce(void *x, int len, MPI_Comm comm)
+{
+#if TYPE == FLOAT
+  MPI_Allreduce(MPI_IN_PLACE, x, len, MPI_FLOAT, MPI_SUM, comm);
+#elif TYPE == DOUBLE
+  MPI_Allreduce(MPI_IN_PLACE, x, len, MPI_DOUBLE, MPI_SUM, comm);
+#endif
+}
+
+
 void MPI_print(int rank, const char *fmt, ...)
 {
   if (rank == 0)

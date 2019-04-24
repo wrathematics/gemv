@@ -5,11 +5,17 @@
 #define MB_BACKOFF 1000
 
 
-int get_n()
+void gpu_init()
+{
+  cudaSetDevice(0);
+  cudaDeviceReset();
+}
+
+
+
+int get_dims()
 {
   size_t mem_free, mem_total;
-  
-  cudaSetDevice(0);
   
   cudaMemGetInfo(&mem_free, &mem_total);
   return (int) sqrt((mem_total - MB_BACKOFF*1024*1024)/sizeof(REAL));
