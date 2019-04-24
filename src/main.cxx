@@ -23,7 +23,9 @@ int size, rank;
 
 static inline double gflops(const int m, const int n, const double t)
 {
-  return (double)((double)2*m*n - m)/t/1e9;
+  double ops = (double) m*(2*n+2); // gemm formula
+  // double ops = (double) 2.0*m*n - m; // gemv formula
+  return ops/t/1e9;
 }
 
 

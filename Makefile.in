@@ -1,9 +1,9 @@
 MPICXX = mpic++
 NVCC = @NVCC@
 
-CXXFLAGS = -O2 -std=c++11 -Wall -pedantic -Wextra
+CXXFLAGS = -O3 -std=c++11 -Wall -pedantic -Wextra
 LDFLAGS = 
-CUDA_CFLAGS = @CUDA_CFLAGS@ -arch=sm_61 -Xcompiler -Ofast
+CUDA_CFLAGS = @CUDA_CFLAGS@ -arch=sm_61 -Xcompiler -O3 -Xcompiler -Ofast
 CUDA_CPPFLAGS = -Xcompiler -Wall -Xcompiler -Wextra
 CUDA_LDFLAGS = @CUDA_LDFLAGS@ -lcudart -lcublas
 
