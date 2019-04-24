@@ -18,7 +18,9 @@ int get_dims()
   size_t mem_free, mem_total;
   
   cudaMemGetInfo(&mem_free, &mem_total);
-  return (int) sqrt((mem_total - MB_BACKOFF*1024*1024)/sizeof(REAL));
+  
+  double bytes = (double)(mem_total - (size_t)MB_BACKOFF*1024*1024);
+  return (int) sqrt(bytes/sizeof(REAL));
 }
 
 
