@@ -1,0 +1,12 @@
+#ifndef GEMV_MPI_UTILS_H
+#define GEMV_MPI_UTILS_H
+
+
+#include <mpi.h>
+#include <stdarg.h>
+
+void MPI_print(int rank, const char *fmt, ...);
+void MPI_throw_err(int errno, int rank, const char *fmt, ...);
+
+
+#endif
