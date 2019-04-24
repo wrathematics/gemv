@@ -1,2 +1,6 @@
 gemv
 src/*.o
+
+Makefile
+config.status
+config.log

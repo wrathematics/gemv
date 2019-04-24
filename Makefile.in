@@ -1,11 +1,11 @@
 MPICXX = mpic++
-NVCC = /usr/local/cuda/bin/nvcc
+NVCC = @NVCC@
 
 CXXFLAGS = -O2 -std=c++11 -Wall -pedantic -Wextra
 LDFLAGS = 
-CUDA_CFLAGS = -I/usr/local/cuda/include -arch=sm_61 -Xcompiler -Ofast
+CUDA_CFLAGS = @CUDA_CFLAGS@ -arch=sm_61 -Xcompiler -Ofast
 CUDA_CPPFLAGS = -Xcompiler -Wall -Xcompiler -Wextra
-CUDA_LDFLAGS = -L/usr/local/cuda/lib64 -lcudart -lcublas
+CUDA_LDFLAGS = @CUDA_LDFLAGS@ -lcudart -lcublas
 
 
 MPI_SRC = $(wildcard src/*.cxx)
