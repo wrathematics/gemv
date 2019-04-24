@@ -58,12 +58,10 @@ int main()
   
   REAL *x, *y, *z;
   check = gen_setup(m_local, n, &x, &y, &z);
-  if (check != ERR_OK)
-    MPI_throw_err(check, rank, "could not allocate device memory");
+  MPI_check_err(check, rank, "could not allocate device memory");
   
   REAL *z_cpu = (REAL*) malloc(m_local*sizeof(*z_cpu));
-  if (z_cpu == NULL)
-    MPI_throw_err(ERR_HOSTMALLOC, rank, "could not allocate host memory");
+  MPI_check_err((z_cpu == NULL)?ERR_HOSTMALLOC:ERR_OK, rank, "could not allocate host memory");
   
   
   double t0_gen = MPI_Wtime();
@@ -72,8 +70,7 @@ int main()
   double t1_gen = MPI_Wtime();
   
   check = mvm_init();
-  if (check != ERR_OK)
-    MPI_throw_err(check, rank, "cublas error");
+  MPI_check_err(check, rank, "cublas error");
   MPI_Barrier(comm);
   
   double t0_mv = MPI_Wtime();
