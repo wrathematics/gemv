@@ -583,6 +583,7 @@ PACKAGE_URL=
 
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
+CUDA_CFLAGS
 OBJEXT
 EXEEXT
 ac_ct_CC
@@ -592,7 +593,7 @@ CFLAGS
 CC
 NVCC
 CUDA_LDFLAGS
-CUDA_CFLAGS
+CUDA_CPPFLAGS
 target_alias
 host_alias
 build_alias
@@ -2636,7 +2637,7 @@ fi
 
 
 # Saving the current flags
-ax_save_CFLAGS="${CFLAGS}"
+ax_save_CPPFLAGS="${CPPFLAGS}"
 ax_save_LDFLAGS="${LDFLAGS}"
 
 # Checking for nvcc
@@ -2646,13 +2647,13 @@ if test -x "$cuda_prefix/bin/nvcc"; then
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: found in $cuda_prefix/bin" >&5
 $as_echo "found in $cuda_prefix/bin" >&6; }
 	NVCC="${cuda_prefix}/bin/nvcc"
-	CUDA_CFLAGS="-I$cuda_prefix/include"
+	CUDA_CPPFLAGS="-I$cuda_prefix/include"
 	CUDA_LDFLAGS="-L$cuda_prefix/lib64"
 elif test -x "/usr/bin/nvcc"; then
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: found in /usr/bin" >&5
 $as_echo "found in /usr/bin" >&6; }
 	NVCC="/usr/bin/nvcc"
-	CUDA_CFLAGS=""
+	CUDA_CPPFLAGS=""
 	CUDA_LDFLAGS=""
 else
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: not found!" >&5
@@ -2664,7 +2665,7 @@ See \`config.log' for more details" "$LINENO" 5; }
 fi
 
 
-CFLAGS="$CUDA_CFLAGS $CFLAGS"
+CPPFLAGS="$CUDA_CPPFLAGS $CPPFLAGS"
 LDFLAGS="$CUDA_LDFLAGS $LDFLAGS"
 
 # And the header and the lib
@@ -2732,7 +2733,7 @@ fi
 
 
 # Returning to the original flags
-CFLAGS=${ax_save_CFLAGS}
+CPPFLAGS=${ax_save_CPPFLAGS}
 LDFLAGS=${ax_save_LDFLAGS}
 
 
@@ -2741,7 +2742,7 @@ echo " "
 echo "************************** Results of configure **************************"
 echo "* CUDA Report:"
 echo "    >> NVCC=${NVCC}"
-echo "    >> CUDA_CFLAGS=${CUDA_CFLAGS}"
+echo "    >> CUDA_CPPFLAGS=${CUDA_CPPFLAGS}"
 echo "    >> CUDA_LDFLAGS=${CUDA_LDFLAGS}"
 echo "**************************************************************************"
 echo " "
